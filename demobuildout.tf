@@ -1,17 +1,17 @@
 #AzureRM_RG_Terraform_template for testing#
 provider "azurerm" {
-    subscription_id="5726ff4f-c875-4aa5-a5c4-da742224d535"
-    tenant_id="94d54851-b213-4ebc-8787-6e58d3ee975b"
+    subscription_id="<SUBSCRIPTION id>"
+    tenant_id="<TENANT ID>"
     version = "~>2.30.0"
     features{}
   }
     
 /*terraform {
     backend "azurerm" {
-      resource_group_name   = "cloud-shell-storage-westus"
-      storage_account_name  = "cs410032000d200b8e2"
-      container_name        = "tstate"
-      key                   = "terraform.tfstate"
+      resource_group_name   = "<RESOURCE GROUP ID>"
+      storage_account_name  = "<STORAGE ACCOUNT>"
+      container_name        = "<CONTAINER>"
+      key                   = "<KEY STRING>"
     }
   }
 */
@@ -56,9 +56,9 @@ provider "azurerm" {
   }
 ###################################################################
 # Create a Storage Account
-resource "azurerm_storage_account" "demotaylorsa" {
-  name                     = "demotaylorsa"
-  resource_group_name      = "DemoRG-001"
+resource "azurerm_storage_account" "NAME" {
+  name                     = "NAME"
+  resource_group_name      = "RG NAME"
   location                 = "West US"
   account_tier             = "Standard"
   account_replication_type = "LRS"
@@ -91,7 +91,7 @@ resource "azurerm_subnet" "subnets" {
 resource "azurerm_public_ip" "Linux_publicip" {
   name                = "Linux_publicip"
   location            = "West US"
-  resource_group_name = "DemoRG-002"
+  resource_group_name = "RG NAME"
   allocation_method   = "Static"
   depends_on = [azurerm_virtual_network.VirtualNetworks]
 }
@@ -99,7 +99,7 @@ resource "azurerm_public_ip" "Linux_publicip" {
 resource "azurerm_public_ip" "Windows_publicip" {
   name                = "Windows_publicip"
   location            = "West US"
-  resource_group_name = "DemoRG-001"
+  resource_group_name = "RG NAME"
   allocation_method   = "Static"
   depends_on = [azurerm_virtual_network.VirtualNetworks]
 }
@@ -108,7 +108,7 @@ resource "azurerm_public_ip" "Windows_publicip" {
 resource "azurerm_network_security_group" "nsg" {
   name                = "nsg"
   location            = "West US"
-  resource_group_name = "DemoRG-001"
+  resource_group_name = "RG NAME"
   depends_on = [azurerm_virtual_network.VirtualNetworks]
 
   security_rule {
@@ -150,11 +150,11 @@ resource "azurerm_network_security_group" "nsg" {
 resource "azurerm_network_interface" "Linux_nic" {
   name                      = "Linux_nic"
   location                  = "West US"
-  resource_group_name       = "DemoRG-002"
+  resource_group_name       = "RG NAME"
   
   ip_configuration {
     name                          = "LinuxNICConfg"
-    subnet_id                     = "/subscriptions/5726ff4f-c875-4aa5-a5c4-da742224d535/resourceGroups/DemoRG-001/providers/Microsoft.Network/virtualNetworks/vnet-demo-001/subnets/subnet-demo-002"
+    subnet_id                     = "/subscriptions/<SUBSCRIPTION ID>/resourceGroups/<RG NAME>/providers/Microsoft.Network/virtualNetworks/vnet-demo-001/subnets/subnet-demo-002"
     private_ip_address_allocation = "dynamic"
     public_ip_address_id          = azurerm_public_ip.Linux_publicip.id
   }
@@ -163,11 +163,11 @@ resource "azurerm_network_interface" "Linux_nic" {
 resource "azurerm_network_interface" "Windows_nic" {
   name                      = "Windows_nic"
   location                  = "West US"
-  resource_group_name       = "DemoRG-001"
+  resource_group_name       = "RG NAME"
   
   ip_configuration {
     name                          = "WindowsNICConfg"
-    subnet_id                     = "/subscriptions/5726ff4f-c875-4aa5-a5c4-da742224d535/resourceGroups/DemoRG-001/providers/Microsoft.Network/virtualNetworks/vnet-demo-001/subnets/subnet-demo-001"
+    subnet_id                     = "/subscriptions/<SUBSCRIPTION ID>/resourceGroups/<RG NAME>/providers/Microsoft.Network/virtualNetworks/vnet-demo-001/subnets/subnet-demo-001"
     private_ip_address_allocation = "dynamic"
     public_ip_address_id          = azurerm_public_ip.Windows_publicip.id
   }
@@ -177,7 +177,7 @@ resource "azurerm_network_interface" "Windows_nic" {
 resource "azurerm_virtual_machine" "linuxvm" {
   name                  = "LinuxVM"
   location              = "West US"
-  resource_group_name   = "DemoRG-002"
+  resource_group_name   = "RG NAME"
   network_interface_ids = [azurerm_network_interface.Linux_nic.id]
   vm_size               = "Standard_D2s_v3"
   
@@ -197,8 +197,8 @@ resource "azurerm_virtual_machine" "linuxvm" {
 
   os_profile {
     computer_name  = "myTFVM"
-    admin_username = "rtaylor9"
-    admin_password = "Password1234!"
+    admin_username = "ADMIN"
+    admin_password = "<PASSWORD>"
   }
 
   os_profile_linux_config {
@@ -212,8 +212,8 @@ resource "azurerm_windows_virtual_machine" "WindowsVM" {
   resource_group_name = "DemoRG-001"
   location            = "West US"
   size                = "Standard_D2s_v3"
-  admin_username      = "rtaylor9"
-  admin_password      = "P@$$w0rd1234!"
+  admin_username      = "ADMIN"
+  admin_password      = "<PASSWORD>"
   network_interface_ids = [azurerm_network_interface.Windows_nic.id,]
 
   os_disk {
